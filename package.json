@@ -1,0 +1,14 @@
+{
+  "name": "components",
+  "version": "1.0.0",
+  "description": "Our class project",
+  "main": "index.js",
+  "scripts": {
+    "develop": "static-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "static-server": "^2.2.1"
+  }
+}

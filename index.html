@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Component</title>
+</head>
+<body>
+
+<div class="root"></div>
+
+<script>
+  const title = 'Hello, this is my SPA!!!';
+
+  class Component {
+    constructor() {
+      this.render();
+      this.loadData();
+
+      this.subElements = this.getSubElements();
+
+      console.error('this.subElements', this.subElements);
+    }
+
+    async loadData () {
+      const response = await fetch('http://demo.bootcamp.place/api/movies/?start=0&end=1');
+      const json = await response.json();
+      const [data] = json.data;
+
+      for (const item of Object.entries(data)) {
+        const [key, value] = item;
+
+        if (this.subElements[key]) {
+          this.subElements[key].innerHTML = value;
+        }
+      }
+    }
+
+    getSubElements () {
+      const result = {};
+      const subElements = [...this.element.querySelectorAll("[data-element]")];
+
+      for (const item of subElements) {
+        const key = item.dataset.element;
+
+        result[key] = item;
+      }
+
+      return result;
+    }
+
+    getTemplate() {
+      return `
+        <div>
+          <h1 data-element="title"></h1>
+          <div data-element="overview"></div>
+          <ul>
+            <li data-element="homepage"></li>
+            <li data-element="original_language"></li>
+            <li data-element="popularity"></li>
+          </ul>
+        </div>
+      `;
+    }
+
+    render() {
+      const wrapper = document.createElement('div');
+
+      wrapper.innerHTML = this.getTemplate();
+
+      this.element = wrapper; // <--- DOM element
+    }
+
+    remove() {
+      console.error('remove');
+    }
+  }
+
+  const obj = new Component(title);
+  const root = document.querySelector('.root');
+
+  console.error(1111);
+  root.append(obj.element);
+  console.error(2222);
+</script>
+</body>
+</html>
