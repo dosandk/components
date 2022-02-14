@@ -1,86 +1,77 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Component</title>
+  <title>Routeing in the SPA</title>
 </head>
+<style>
+  /*a {*/
+  /*  outline: 1px solid red;*/
+  /*}*/
+
+  /*li {*/
+  /*  outline: 1px solid black;*/
+  /*}*/
+</style>
 <body>
+<menu id="menu">
+  <ul>
+    <li>
+      <a href="/home">Home</a>
+    </li>
+    <li>
+      <a href="/all-movies">All movies</a>
+    </li>
+    <li>
+      <a href="/my-collection">My Collection</a>
+    </li>
+    <li>
+      <a href="/create-movie">Create movie</a>
+    </li>
+  </ul>
+</menu>
 
-<div class="root"></div>
+<main id="content">
+  <!--  Page  -->
+</main>
 
-<script>
-  const title = 'Hello, this is my SPA!!!';
+<script type="module">
+  import HomePage from './home-page.js';
+  import AllMoviesPage from './all-movies.js';
+  import MyCollectionPage from './my-collection.js';
+  import CreateMoviePage from './create-movie.js';
 
-  class Component {
-    constructor() {
-      this.render();
-      this.loadData();
+  const menu = document.getElementById('menu');
+  const content = document.getElementById('content');
 
-      this.subElements = this.getSubElements();
+  const routes = {
+    '/home': HomePage,
+    '/all-movies': AllMoviesPage,
+    '/my-collection': MyCollectionPage,
+    '/create-movie': CreateMoviePage
+  };
 
-      console.error('this.subElements', this.subElements);
+  menu.addEventListener('click', event => {
+    const link = event.target.closest('a');
+
+    if (link) {
+      event.preventDefault();
+      const path = event.target.getAttribute('href');
+      const page = new routes[path];
+
+      history.pushState(null, null, path);
+
+      content.innerHTML = '';
+      content.append(page.element);
     }
+  });
 
-    async loadData () {
-      const response = await fetch('http://demo.bootcamp.place/api/movies/?start=0&end=1');
-      const json = await response.json();
-      const [data] = json.data;
-
-      for (const item of Object.entries(data)) {
-        const [key, value] = item;
-
-        if (this.subElements[key]) {
-          this.subElements[key].innerHTML = value;
-        }
-      }
-    }
-
-    getSubElements () {
-      const result = {};
-      const subElements = [...this.element.querySelectorAll("[data-element]")];
-
-      for (const item of subElements) {
-        const key = item.dataset.element;
-
-        result[key] = item;
-      }
-
-      return result;
-    }
-
-    getTemplate() {
-      return `
-        <div>
-          <h1 data-element="title"></h1>
-          <div data-element="overview"></div>
-          <ul>
-            <li data-element="homepage"></li>
-            <li data-element="original_language"></li>
-            <li data-element="popularity"></li>
-          </ul>
-        </div>
-      `;
-    }
-
-    render() {
-      const wrapper = document.createElement('div');
-
-      wrapper.innerHTML = this.getTemplate();
-
-      this.element = wrapper; // <--- DOM element
-    }
-
-    remove() {
-      console.error('remove');
-    }
-  }
-
-  const obj = new Component(title);
-  const root = document.querySelector('.root');
-
-  console.error(1111);
-  root.append(obj.element);
-  console.error(2222);
+  window.addEventListener('popstate', () => {
+    const path = document.location.pathname;
+    const page = new routes[path];
+    content.innerHTML = '';
+    content.append(page.element);
+  });
 </script>
 </body>
 </html>
